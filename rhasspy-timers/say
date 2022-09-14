@@ -1,0 +1,10 @@
+#!/bin/bash
+
+MQTT_HOST=localhost
+function say {
+ local text="${1:-hello}"
+ mosquitto_pub -h $MQTT_HOST -t hermes/tts/say -m '{"text":"'"$text"'"}'
+ return 0
+}
+
+say "$*"

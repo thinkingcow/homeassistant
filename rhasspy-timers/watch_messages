@@ -1,0 +1,5 @@
+#!/bin/bash
+# show messages on all hermes topics (except audio)
+HOST=localhost
+echo "showing mqtt messages..."
+mosquitto_sub  -h $HOST  -F %J -t 'hermes/#' -T hermes/audioServer/default/audioFrame | jq --unbuffered '{topic:.topic,payload:.payload}'

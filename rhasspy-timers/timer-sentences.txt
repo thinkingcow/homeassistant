@@ -1,0 +1,16 @@
+[Timer]
+  timer_duration=(1..59){minutes} [and a half{seconds:30}]
+  timer_label=($nouns){label}
+  timer_named=(pizza | egg | bread | englishmuffin | crumpet | cookie | yogurt){label}
+  timer_delta=(30 seconds | 1 minute | 2..30 minutes){delta}
+  timer_ref=(the <timer_label>|the <timer_duration>|that{label})
+  
+  set (the|a) <timer_duration> minute timer (named|called) <timer_label> (:){action:set}
+  set (the|a|an) <timer_label> timer for <timer_duration> (minute | minutes)(:){action:set}
+  set (the|a) (<timer_named>|<timer_duration> minute) timer (:){action:set}
+  add <timer_delta> to <timer_ref> timer(:){action:add}
+  cancel <timer_ref> timer (:){action:cancel}
+  cancel all [the] timers (:){action:cancel_all}
+  
+  what are the timers (:){action:queryall}
+  help [with] timers (:){action:help}

@@ -1,0 +1,24 @@
+#!/bin/bash
+cd /home/suhler/assistant
+
+function do_screen() {
+  local cmd="$1"
+  shift
+  local name=$(basename $cmd .bash)
+  screen -q -ls "$name"
+  if [[ "$?" -eq 11 ]] ; then
+    echo "screen for $name already running" > /dev/stderr
+  else
+    echo "running (screen -d -m -S $name $0 $cmd $*)" > /dev/stderr
+    screen -h 500 -d -m -S "$name" "$cmd" $*
+  fi
+}
+
+# start rhasspy and assistants in "screen" sessions
+for i in convert music timers ; do
+  do_screen ./$i.bash
+done
+do_screen /usr/bin/rhasspy -p en
+echo "Home assistant started"
+logger -t "assistant" "Starting assistant services"
+screen -ls
