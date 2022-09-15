@@ -1,0 +1,13 @@
+[Convert]
+  frac=((one|an) eighth|(one|a) quarter|three eights|(one|a) third|two thirds|(one|a) half|two thirds|three quarters){fraction}
+  quant=(two:2|three:3|four:4){quantity}
+  unit=(cup|pint|quart|stick|tablespoon|teaspoon){unit}
+  units=(cups|pints|quarts|sticks|tablespoons|teaspoons){unit}
+
+  how much does <frac> <unit> of ($foods){ingredient} weigh (:){hint:fraction-only}
+  how much does (one | a){quantity:1} <unit> of ($foods){ingredient} weigh (:){hint:one-plus}
+  how much do <quant> <units>  of ($foods){ingredient} weigh (:){hint:whole-only}
+  how much does one{quantity:1} (plus | and) <frac> (<unit>|<units>) of ($foods){ingredient} weigh (:){hint:one-plus}
+  how much does <quant> (plus | and) <frac> <unit> of ($foods){ingredient} weigh (:){hint:one-plus}
+  how much do <quant> eggs {food:egg} weigh (:){hint:egg}
+  how much does (one | an){quantity:1} egg{food} weigh (:){hint:egg}
