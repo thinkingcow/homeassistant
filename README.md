@@ -1,8 +1,9 @@
 # homeassistant*
 Control modules for handling Rhasspy intents.  These are standalone
-executables that interpret and respond to Rhasspy MQTT messages.  I usually start whatever modules
-I like with either an at-bootup script, or a systemd service module, pointed at the proper MQTT server.
-Whenever Rhasspy is running, they do their thing.
+executables that interpret and respond to Rhasspy voice commands via
+the MQTT intent messages.  I usually start whatever modules I like with
+either an at-bootup script, or a systemd service module, pointed at the
+proper MQTT server.  Whenever Rhasspy is running, they do their thing.
 
 ## Hardware
   - Raspberry PI 4
@@ -26,6 +27,9 @@ A kitchen timer module.  Supports multiple kitchen timers via voice command
 
 ## rhasspy-food-units-conversion
 Food unit volume to weight conversions
+
+## rhasspy-music
+mpd music player command/control
 
 ## Notes
 - The primary purpose of this repo is to allow me to recreate my setup if I loose a local copy.  If anyone else finds this to be useful, that would be nice too.
