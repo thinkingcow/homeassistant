@@ -1,4 +1,4 @@
-# homeassistant
+# homeassistant*
 Control modules for handling Rhasspy intents.  These are standalone
 executables that interpret and respond to Rhasspy MQTT messages
 
@@ -11,11 +11,29 @@ executables that interpret and respond to Rhasspy MQTT messages
 ## Software
   - Latest 64 bit Raspberry PI OS
   - Rhasspy 2.5.11 (I know, it's likely abandonware, but whatever)
-  - Extra Packages (e.g. apt install)
-  -- jq
-  -- mosquitto-clients
+  - Additional Packages (e.g. apt install)
+   - jq
+   - mosquitto-clients
+
+## Rhasspy Configuration
+  see: rhasspy-profile.json
+  Note the "sound" section to configure the USB mic/speaker.
+
+rhasspy-timers:
+nouns.txt
+README
+run
+say
+sounds
+timers.bash
+timer-sentences.txt
+watch_messages
 
 ## Rasspy-timers
 A kitchen timer module.  Supports multiple kitchen timers via voice command
 
 
+
+* The primary purpose of this repo is to allow me to recreate my setup if I loose a local copy.  If anyone else finds this to be useful, that would be nice too.
+
+* The primary purpose of this repo is to allow me to recreate my setup if I loose a local copy.  If anyone else finds this to be useful, that would be nice too.
