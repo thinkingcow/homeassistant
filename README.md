@@ -24,7 +24,10 @@ Whenever Rhasspy is running, they do their thing.
 ## Rasspy-timers
 A kitchen timer module.  Supports multiple kitchen timers via voice command
 
+## rhasspy-food-units-conversion
+Food unit volume to weight conversions
 
 ## Notes
 - The primary purpose of this repo is to allow me to recreate my setup if I loose a local copy.  If anyone else finds this to be useful, that would be nice too.
 - This repo is still being assembled from scattered parts.
+- TODO: refactor common code fragments into library, add Makefile to build executables
