@@ -42,10 +42,9 @@
 #   recogniser, and alarms, set up when a timer is created
 #  - All commands consist of lines of the form "name=value", terminated by the line: command=<something>
 # Configuration parameters
-HOST=localhost          # host of mqtt server
+HOST=localhost          #   host of mqtt server
 SOUND_DIR=sounds        # directory to find sound files in.
 ALARM_SOUND=fanfare.wav # what to play when the alarm sounds
-MQTT_TOPIC=Timer        # sentences category name
 cd /home/suhler/assistant || exit
 
 declare -A Args   # Command arguments
@@ -75,7 +74,7 @@ declare -A NamedTimers=(
   [swap-the-cookie-trays]=330
 )
 
-# Permits interactive debugging via source $0
+# Permits interactice debugging via source $0
 function reset {
   unset Timers
   unset Last
@@ -84,14 +83,15 @@ function reset {
 
 # Listen for timer events from mqtt
 function watch {
-  mosquitto_sub -h $HOST -t "hermes/intent/$MQTT_TOPIC"
+  local host="$1" intent="$2"
+  mosquitto_sub -h "$host" -t "hermes/intent/$intent" 
 }
 
 # Extract slots from a timer event as name=value pairs.
-# adds a dummy slot "command=xxx" at the end to trigger the action.
+#   add a dummy slot "command=xxx" at the end to trigger the action.
 function extract {
-  jq --unbuffered -r \
-     '.slots|map({(.slotName):.value.value})|. += [{"command":"timer"}]|add|to_entries[]|join("=")' 
+   jq --unbuffered -r \
+   '.slots|map({(.slotName):.value.value})|. += [{"command":"timer"}]|add|to_entries[]|join("=")' 
 }
 
 # Play a sound file via MQTT
@@ -105,10 +105,10 @@ function play_wav() {
 
 # Text to speech (must succeed)
 function speak {
-  local text="${1:-hello}"
-  debug "$text"
-  mosquitto_pub -h $HOST -t hermes/tts/say -m '{"text":"'"$text"'"}'
-  return 0
+ local text="${1:-hello}"
+ debug "$text"
+ mosquitto_pub -h $HOST -t hermes/tts/say -m '{"text":"'"$text"'"}'
+ return 0
 }
 
 # get the time left, in seconds, for a labeled timer
@@ -216,7 +216,7 @@ function say_timer() {
   local label="$1"
   local seconds x added=0
   [[ "$label" =~ ^[0-9]+$ ]] && { say_duration "$label"; return; }
-  [[ ${Timers["$label"]} ]] && { read -r seconds x x added <<<  "${Timers["$label"]}"; say_duration "$seconds" ;}
+  has_timer "$label" && { read -r seconds x x added <<<  "${Timers["$label"]}"; say_duration "$seconds" ;}
   (( added > 0 )) && echo -n ", with $(say_duration "$added") added, "
   echo -n " $label"
 }
@@ -267,15 +267,21 @@ function do_alarm() {
   Last="$label"
 }
 
+function has_timer() {
+  local label="$1"
+  [[ -v "Timers[$label]" ]]
+}
+
 function do_set() {
   local sec="${1:-30}" label="${2:-$1}"
-  [[ ${Timers[$label]} ]] && say_running "$label" || set_timer "$label" "$sec"
+  has_timer "$label"  && (( $(sec_left "$label") < 0 )) && unset_timer "$label"
+  has_timer "$label"  && say_running "$label" || set_timer "$label" "$sec"
 }
 
 function do_cancel() {
   local label=${1}
   [[ $label == "that" ]] && label="$Last"
-  [[ ${Timers[$label]} ]] && cancel_timer "$label" || say_none "$label"
+  has_timer "$label]" && cancel_timer "$label" || say_none "$label"
   speak "you have $(say_number "${#Timers[@]}" timer) remaining."
 }
 
@@ -283,7 +289,7 @@ function do_help() {
   speak "you can say:"
   speak "  set the seventeen minute timer."
   speak "  set the pizza timer."
-  speak "  set a two minute timer named houseboat."
+  speak "  set a two minute timer named elephant"
   speak "  add 2 and a half minutes to the pizza timer"
   speak "  cancel that timer."
   speak "  cancel the seventeen minute timer."
@@ -291,10 +297,10 @@ function do_help() {
 }
 
 function do_cancel_all() {
-  speak "cancelling $(say_number "${#Timers[@]}" timer)."
-  for i in "${!Timers[@]}"; do
-    cancel_timer "$i"
-  done
+    speak "cancelling $(say_number "${#Timers[@]}" timer)."
+    for i in "${!Timers[@]}"; do
+      cancel_timer "$i"
+    done
 }
 
 # describe all timers, removing all expired timers
@@ -317,7 +323,7 @@ function do_query_all() {
   (( expired == 0 && running == 1)) && { speak "$s_running" ; return ; }
   (( expired == 0 )) && { speak "There are $running timers. $s_running" ; return ; }
   (( expired == 1 && running == 0)) && { speak "$s_expired" ; return ; }
-  speak "$(say_number $running "active timer") $s_running $s_expired"
+  speak "$(say_number "$running" "active timer") $s_running $s_expired"
 }
 
 # convert time added to a timer into seconds
@@ -330,6 +336,7 @@ function delta_to_sec() {
 }
 
 # Add specified seconds to named timer
+# XXX does calculation wrong
 function add_to() {
   local label="$1" delta_sec="$2" say_delta="$3"
   local left seconds started pid added note=""
@@ -355,12 +362,13 @@ function unset_timer() {
   debug "$label: $(declare -p Timers)"
   unset Timers["$label"]
   [[ $label == "$Last" ]] && Last=""
+  debug "$label: $(declare -p Timers)"
   return 0
 }
 
 function do_delta() {
    local label="${1:-$2}" delta="$3" sec="$(delta_to_sec "$delta")"
-   [[ ${Timers[$label]} ]] && add_to "$label" "$sec" "$delta" || \
+   has_timer "$label]" && add_to "$label" "$sec" "$delta" || \
      speak "There is no $(say_timer "$label") timer to add $delta to."
 }
 
@@ -382,7 +390,7 @@ function do_command {
     add)        do_delta "$label" "$((minutes * 60 + seconds))" "$delta" ;;
     reload)     speak "reloading"; . ./timers.bash;;
     status)     do_status;;
-    *)           speak "command, $command, not understood" ;;
+    *) speak "command, $command, not understood" ;;
   esac
 }
 
@@ -414,7 +422,7 @@ function init() {
 
 function main() {
   init
-  (watch | extract > fifo) &
+  (watch $HOST Timer | extract > fifo) &
   < fifo event_loop
   echo "main exit"
 }
