@@ -54,12 +54,7 @@ Now=0             # Current Unix time
 
 # print args preceded by function name
 function debug {
-  echo "${FUNCNAME[2]}->${FUNCNAME[1]}: $*" > /dev/stderr
-}
-
-function do_status() {
-  debug "$(declare -p Timers)"
-  debug "last=$Last now=$Now"
+  echo "$BASH_SOURCE: ${FUNCNAME[1]}: $*" > /dev/stderr
 }
 
 # These are the named timers (times in seconds)
@@ -171,18 +166,20 @@ function start_timer() {
   debug "$label: $(declare -p Timers)"
 }
 
-# Start a timer in a subshell
+# Start a timer, or call special handler, if available.
+# use s named timer, if no duration specified.
 function set_timer {
-  local label="${1:-test}" sec=${NamedTimers[$label]:-$2}
+  local label="${1:-test}" sec="$2"
+  (( sec > 0 )) || sec=${NamedTimers[$label]:-30}
   # process as a special case, if defined
-  [[ $(type -t "special_$label") == "function" ]] && { "special_$label"; return; }
+  [[ $(type -t "special_$label") == "function" ]] && { "special_$label" "$label" "$sec"; return; }
   start_timer "$label" "$sec"
   speak "setting the $(say_timer "$label") timer"
 }
 
-# special function timer
+# Sample special function timer
 function special_cookie {
-  debug
+  debug "$*"
   enqueue "action=set" "label=swap-the-cookie-trays"
   enqueue "action=set" "label=chocolate-chip-cookie"
 }
@@ -192,7 +189,6 @@ function cancel_timer {
   local label=${1:-none}
   local seconds start pid added
   read -r seconds start pid added <<< "${Timers[$label]}"
-  debug "killing timer $label ($pid) started $start"
   speak "Cancelling the, $(say_timer "$label") timer with $(say_time_left "$label") left."
   unset_timer "$label"
   Last="$label"
@@ -273,7 +269,7 @@ function has_timer() {
 }
 
 function do_set() {
-  local sec="${1:-30}" label="${2:-$1}"
+  local sec="$1" label="${2:-$1}"
   has_timer "$label"  && (( $(sec_left "$label") < 0 )) && unset_timer "$label"
   has_timer "$label"  && say_running "$label" || set_timer "$label" "$sec"
 }
@@ -281,7 +277,7 @@ function do_set() {
 function do_cancel() {
   local label=${1}
   [[ $label == "that" ]] && label="$Last"
-  has_timer "$label]" && cancel_timer "$label" || say_none "$label"
+  has_timer "$label" && cancel_timer "$label" || say_none "$label"
   speak "you have $(say_number "${#Timers[@]}" timer) remaining."
 }
 
@@ -331,19 +327,16 @@ function delta_to_sec() {
   local val unit
   read -r val unit <<< "$1"
   [[ $unit == mi* ]] && val=$((val * 60))
-  debug "($1) -> $val"
   echo "$val"
 }
 
 # Add specified seconds to named timer
-# XXX does calculation wrong
 function add_to() {
   local label="$1" delta_sec="$2" say_delta="$3"
   local left seconds started pid added note=""
   left=$(sec_left "$label")
 
   (( left < 0 )) && note+="recently expired"
-  debug "$left + $delta_sec"
   (( left + delta_sec < 0 )) && {
     speak "The $(say_timer "$label") expired too long ago, create a new timer"
     unset_timer "$label"
@@ -359,25 +352,24 @@ function add_to() {
 
 function unset_timer() {
   local label="$1"
-  debug "$label: $(declare -p Timers)"
   unset Timers["$label"]
   [[ $label == "$Last" ]] && Last=""
-  debug "$label: $(declare -p Timers)"
+  debug "$label"
   return 0
 }
 
 function do_delta() {
-   local label="${1:-$2}" delta="$3" sec="$(delta_to_sec "$delta")"
-   has_timer "$label]" && add_to "$label" "$sec" "$delta" || \
-     speak "There is no $(say_timer "$label") timer to add $delta to."
+  local label="${1:-$2}" delta="$3" sec="$(delta_to_sec "$delta")"
+  has_timer "$label" && add_to "$label" "$sec" "$delta" || \
+  speak "There is no $(say_timer "$label") timer to add $delta to."
 }
 
 function do_command {
   debug "$(declare -p Args)"
   local command="${Args[action]}"
   local label="${Args[label]}"
-  local minutes="${Args[minutes]}"
-  local seconds="${Args[seconds]}"
+  local minutes="${Args[minutes]:-0}"
+  local seconds="${Args[seconds]:-0}"
   local delta="${Args[delta]}"
   [[ $label == "that" ]] && label="$Last"
   case $command in 
@@ -389,7 +381,6 @@ function do_command {
     queryall)   do_query_all ;;
     add)        do_delta "$label" "$((minutes * 60 + seconds))" "$delta" ;;
     reload)     speak "reloading"; . ./timers.bash;;
-    status)     do_status;;
     *) speak "command, $command, not understood" ;;
   esac
 }
