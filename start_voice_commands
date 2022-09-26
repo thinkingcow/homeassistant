@@ -1,5 +1,8 @@
 #!/bin/bash
-cd /home/suhler/assistant
+# Start rhasspy and the required voice command services
+MODULES="convert music timers"
+DIR="${BASH_SOURCE%/*}"
+[[ -d "$DIR" ]] && cd "$DIR"
 
 function do_screen() {
   local cmd="$1"
@@ -15,10 +18,10 @@ function do_screen() {
 }
 
 # start rhasspy and assistants in "screen" sessions
-for i in convert music timers ; do
+for i in $MODULES ; do
   do_screen ./$i.bash
 done
 do_screen /usr/bin/rhasspy -p en
-echo "Home assistant started"
-logger -t "assistant" "Starting assistant services"
+echo "Home assistant voice commands in $DIR started"
+logger -t "assistant" "Starting services: $MODULES"
 screen -ls
