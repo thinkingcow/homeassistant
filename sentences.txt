@@ -1,0 +1,39 @@
+[Radio]
+  playlists=($playlists){playlist}
+  (play | resume | pause){action} (radio | music)
+  (next | previous){action} track
+  (increase | decrease | raise | lower){action} [the] volume{detail}
+  (select|tune to){action} [playlist] <playlists>
+  what (am I listening to | is playing) (:){action:what}
+
+[Convert]
+  frac=((one|an) eighth|(one|a) quarter|three eights|(one|a) third|two thirds|(one|a) half|two thirds|three quarters){fraction}
+  quant=(two:2|three:3|four:4){quantity}
+  unit=(cup|pint|quart|stick|tablespoon|teaspoon){unit}
+  units=(cups|pints|quarts|sticks|tablespoons|teaspoons){unit}
+
+  how much does <frac> <unit> of ($foods){ingredient} weigh (:){hint:fraction-only}
+  how much does (one | a){quantity:1} <unit> of ($foods){ingredient} weigh (:){hint:one-plus}
+  how much do <quant> <units>  of ($foods){ingredient} weigh (:){hint:whole-only}
+  how much does one{quantity:1} (plus | and) <frac> (<unit>|<units>) of ($foods){ingredient} weigh (:){hint:one-plus}
+  how much does <quant> (plus | and) <frac> <unit> of ($foods){ingredient} weigh (:){hint:one-plus}
+  how much do <quant> eggs {food:egg} weigh (:){hint:egg}
+  how much does (one | an){quantity:1} egg{food} weigh (:){hint:egg}
+
+[Timer]
+  timer_duration=(1..59){minutes} [and a half{seconds:30}]
+  timer_label=($nouns){label}
+  timer_named=(pizza | egg | bread | englishmuffin | crumpet | cookie | yogurt){label}
+  timer_delta=(30 seconds | 1 minute | 2..30 minutes){delta}
+  timer_ref=(the <timer_label>|the <timer_duration>|that{label})
+  
+  set (the|a) <timer_duration> minute timer (named|called) <timer_label> (:){action:set}
+  set (the|a|an) <timer_label> timer for <timer_duration> (minute | minutes)(:){action:set}
+  set (the|a) (<timer_named>|<timer_duration> minute) timer (:){action:set}
+  add <timer_delta> to <timer_ref> timer(:){action:add}
+  cancel <timer_ref> timer (:){action:cancel}
+  cancel all [the] timers (:){action:cancel_all}
+  
+  what are the timers (:){action:queryall}
+  help [with] timers (:){action:help}
+

@@ -1,6 +1,6 @@
-# homeassistant*
+# home-assistant
 Control modules for handling Rhasspy intents.  These are standalone
-executables that interpret and respond to Rhasspy voice commands via
+executables, written in bash, that interpret and respond to Rhasspy voice commands via
 the MQTT intent messages.  I usually start whatever modules I like with
 either an at-bootup script, or a systemd service module, pointed at the
 proper MQTT server.  Whenever Rhasspy is running, they do their thing.
@@ -15,23 +15,42 @@ proper MQTT server.  Whenever Rhasspy is running, they do their thing.
   - Latest 64 bit Raspberry PI OS
   - Rhasspy 2.5.11 (I know, it's likely abandonware, but whatever)
   - Additional Packages to *apt install*
-    - jq
-    - mosquitto-clients
+    - jq (manipulates json)
+    - mosquitto-clients (talks to the mqtt pub/sub system)
+    - bc (floating point math for bash)
+    - screen (to facilitate monitoring of modules)
 
 ## Rhasspy Configuration
    see: [sample config file](rhasspy-profile.json)
    Note the "sound" section to configure the USB mic/speaker.
 
-## Rasspy-timers
+## Why bash?
+There is no justifyable reason for using bash for this application.  Bash is
+good for defining configuration parameters and starting the command(s) that use
+them in a declarative fashion.  If the logic is complex enough to require
+conditional logic (e.g. if-then-else) then bash is likely the wrong tool for the job.
+So there!
+
+#Library
+*mqtt_library.bash* is the library providing the *API* to interface bash scripts with
+the Rhasspy intent system.  It reads and parses JSON commands from Rhasspy, and calls
+the supplied command processor.
+
+#Modules
+## timers
 A kitchen timer module.  Supports multiple kitchen timers via voice command
 
-## rhasspy-food-units-conversion
+## convert
 Food unit volume to weight conversions
 
-## rhasspy-music
+## music
 mpd music player command/control
 
 ## Notes
+- "sentences.txt" contains the Rhasspy sentence templates
+- "nouns.txt" contains the valid timer names, and belongs in a slot called "nouns"
+- The Rhasspy slot names "playlists" should contain your desired mpd playlists.
+- The *st{art,op}_voice_commands* scripts start the modules (and rhasspy if needed) in a "screen" session,
+which allows easy monitoring and debugging of the modules
 - The primary purpose of this repo is to allow me to recreate my setup if I loose a local copy.  If anyone else finds this to be useful, that would be nice too.
 - This repo is still being assembled from scattered parts.
-- TODO: refactor common code fragments into library, add Makefile to build executables
