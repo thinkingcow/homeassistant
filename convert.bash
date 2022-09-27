@@ -85,7 +85,7 @@ function say_num() {
 # do floating point calculations, rounded to nearest int
 function calc() {
   debug "$*"
-  printf %s "%.0f\n" "$(bc -l <<<"$*")" 
+  printf "%.0f\n" "$(bc -l <<<"$*")" 
 }
 
 function do_convert() {
