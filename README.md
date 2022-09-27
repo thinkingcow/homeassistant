@@ -5,6 +5,23 @@ the MQTT intent messages.  I usually start whatever modules I like with
 either an at-bootup script, or a systemd service module, pointed at the
 proper MQTT server.  Whenever Rhasspy is running, they do their thing.
 
+## Introduction
+I have a Google voice assistant thing in my kitchen, and had been using
+it for kitchen related stuff.  Sadly, as time
+has gone by, She (the Google assistant) has become less reliable for me.
+First, I could no longer access my CD collection via voice control -
+the one I painstakingly uploaded to Google Music.  So I couldn't listen
+to my music while cooking.  Then one day, while I was cooking a
+fancy dinner (and had several important timers set), I asked Google,
+nicely I might add, to "stop playing (the radio)".  I was told "they are
+cancelled": the radio continued to play, but all my timers got cancelled.
+My pleas to "uncancel those timers" were met with nothing but derision.
+
+That was the last straw.  Except for helping me cheat at the NYT daily puzzle, she's pretty useless*
+
+So how hard could it be?
+
+
 ## Hardware
   - Raspberry PI 4
   ![Image of Raspberry Pi 4](https://assets.raspberrypi.com/static/raspberry-pi-4-labelled-f5e5dcdf6a34223235f83261fa42d1e8.png)
@@ -38,21 +55,23 @@ the supplied command processor.
 
 ## Modules
 ## timers
-A kitchen timer module.  Supports multiple kitchen timers via voice command
+A kitchen timer module.  Supports multiple optionally named kitchen timers via voice command.
+See (sentences.txt) for the set of timer capabilities.
 
 ### convert
-Food unit volume to weight conversions
+Food unit volume to weight conversions.  I like cooking by weight; this provides conversions for common ingredients when recipies are volume and not weight based.
 
 ### music
-mpd music player command/control
+mpd music player command/control.
 
 ## Installation
 - [Install Rhasspy](https://rhasspy.readthedocs.io/en/latest/installation/#debian)
-- Install remaining dependencies `sudo apt install screen mosquitto-clients bc jq`
-- Start Rhasspy, and navigate to the browser interface (usually `http://localhost:12101).  From there,
+- Install remaining dependencies
+     `sudo apt install screen mosquitto-clients bc jq`
+- Start Rhasspy, and navigate to the browser interface (usually http://localhost:12101).  From there,
   you can:
   - Configure the Rhasspy profile. I use [this one](rhasspy-profile.json).
-  - install [`sentences.txt`](sentences.txt)` as the sentence templates.
+  - install [`sentences.txt`](sentences.txt) as the sentence templates.
   - install [`nouns.txt`](nouns.txt)' in the 'nouns' slot
   - install the names of your mpd playlists in the 'playlists' slot
 - Verify the audio is working properly (to be added)
@@ -65,4 +84,5 @@ which allows easy monitoring and debugging of the modules
 - The primary purpose of this repo is to allow me to recreate my setup
 if I loose a local copy.  If anyone else finds this to be useful, that
 would be nice too.
+- my assistant also knows how to cheat at the NYT puzzles, but I'm trying not to.
 - This repo is still being assembled from scattered parts.
