@@ -31,26 +31,38 @@ them in a declarative fashion.  If the logic is complex enough to require
 conditional logic (e.g. if-then-else) then bash is likely the wrong tool for the job.
 So there!
 
-#Library
+## Library
 *mqtt_library.bash* is the library providing the *API* to interface bash scripts with
 the Rhasspy intent system.  It reads and parses JSON commands from Rhasspy, and calls
 the supplied command processor.
 
-#Modules
+## Modules
 ## timers
 A kitchen timer module.  Supports multiple kitchen timers via voice command
 
-## convert
+### convert
 Food unit volume to weight conversions
 
-## music
+### music
 mpd music player command/control
 
+## Installation
+- [Install Rhasspy](https://rhasspy.readthedocs.io/en/latest/installation/#debian)
+- Install remaining dependencies `sudo apt install screen mosquitto-clients bc jq`
+- Start Rhasspy, and navigate to the browser interface (usually `http://localhost:12101).  From there,
+  you can:
+  - Configure the Rhasspy profile. I use [this one](rhasspy-profile.json).
+  - install [`sentences.txt`](sentences.txt)` as the sentence templates.
+  - install [`nouns.txt`](nouns.txt)' in the 'nouns' slot
+  - install the names of your mpd playlists in the 'playlists' slot
+- Verify the audio is working properly (to be added)
+- start the modules by running `start_voice_commands`
+
 ## Notes
-- "sentences.txt" contains the Rhasspy sentence templates
-- "nouns.txt" contains the valid timer names, and belongs in a slot called "nouns"
-- The Rhasspy slot names "playlists" should contain your desired mpd playlists.
+- The Rhasspy slot names "playlists" (no sample provided) should contain your desired mpd playlists.
 - The *st{art,op}_voice_commands* scripts start the modules (and rhasspy if needed) in a "screen" session,
 which allows easy monitoring and debugging of the modules
-- The primary purpose of this repo is to allow me to recreate my setup if I loose a local copy.  If anyone else finds this to be useful, that would be nice too.
+- The primary purpose of this repo is to allow me to recreate my setup
+if I loose a local copy.  If anyone else finds this to be useful, that
+would be nice too.
 - This repo is still being assembled from scattered parts.
