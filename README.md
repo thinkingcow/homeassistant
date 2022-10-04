@@ -1,9 +1,7 @@
 # home-assistant
 Control modules for handling Rhasspy intents.  These are standalone
 executables, written in bash, that interpret and respond to Rhasspy voice commands via
-the MQTT intent messages.  I usually start whatever modules I like with
-either an at-bootup script, or a systemd service module, pointed at the
-proper MQTT server.  Whenever Rhasspy is running, they do their thing.
+the MQTT intent messages.
 
 ## Introduction
 I have a Google voice assistant thing in my kitchen, and had been using
@@ -46,7 +44,6 @@ There is no justifyable reason for using bash for this application.  Bash is
 good for defining configuration parameters and starting the command(s) that use
 them in a declarative fashion.  If the logic is complex enough to require
 conditional logic (e.g. if-then-else) then bash is likely the wrong tool for the job.
-So there!
 
 ## Library
 *mqtt_library.bash* is the library providing the *API* to interface bash scripts with
@@ -67,7 +64,7 @@ mpd music player command/control.
 ## Installation
 - [Install Rhasspy](https://rhasspy.readthedocs.io/en/latest/installation/#debian)
 - Install remaining dependencies
-     `sudo apt install screen mosquitto-clients bc jq`
+     ```sudo apt install screen mosquitto-clients bc jq```
 - Start Rhasspy, and navigate to the browser interface (usually http://localhost:12101).  From there,
   you can:
   - Configure the Rhasspy profile. I use [this one](rhasspy-profile.json).
@@ -83,6 +80,6 @@ mpd music player command/control.
 which allows easy monitoring and debugging of the modules
 - The primary purpose of this repo is to allow me to recreate my setup
 if I loose a local copy.  If anyone else finds this to be useful, that
-would be nice too.
+would be nice.
 - my assistant also knows how to cheat at the NYT puzzles, but I'm trying not to.
 - This repo is still being assembled from scattered parts.
