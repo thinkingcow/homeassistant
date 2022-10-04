@@ -4,12 +4,12 @@ SOUND_DIR=${SOUND_DIR:-sounds}       # directory to find sound files in.
 
 # Print function name and args to stderr
 function debug {
-	echo "${BASH_SOURCE[-1]##*/} ${FUNCNAME[1]}: $*" > /dev/stderr
+  echo "${BASH_SOURCE[-1]##*/} ${FUNCNAME[1]}: $*" > /dev/stderr
 }
 
 # Listen for timer events from mqtt
 function watch_mqtt {
-	local topic="$1"
+  local topic="$1"
   mosquitto_sub -h "$MQTT_HOST" -t "hermes/intent/$topic"
 }
 
@@ -24,7 +24,7 @@ function extract_args {
 function play_wav() {
   local file=${1:-boing.wav}
   local id=${2:-dflt}
-	debug "$file"
+  debug "$file"
   mosquitto_pub -h "$MQTT_HOST" \
     -t "hermes/audioServer/default/playBytes/$id"\
     -f "$SOUND_DIR/$file"
@@ -54,9 +54,9 @@ function say_number() {
 #  note: fatal error if fifo doesn't already exist
 function enqueue() {
   local cmd="" fifo=${1:-fifo}
-	[[ -p "$fifo" ]] || { debug "no fifo $fifo" ; exit 1; }
-	shift
-	debug "$fifo: $*"
+  [[ -p "$fifo" ]] || { debug "no fifo $fifo" ; exit 1; }
+  shift
+  debug "$fifo: $*"
   for i in "$@" ; do
     cmd+="$i"
     cmd+='\n'
@@ -72,7 +72,7 @@ function event_loop  {
   while read -r line; do
     case "$line" in
     command*)
-			debug "$(declare -p Args)"
+      debug "$(declare -p Args)"
       $func
       unset Args
       declare -Ag Args
@@ -86,9 +86,9 @@ function event_loop  {
 }
 
 function cleanup() {
-	debug "$*"
+  debug "$*"
   kill $(jobs -p)
-	rm -f "$1"
+  rm -f "$1"
 }
 
 # Sample main program
@@ -98,14 +98,14 @@ function cleanup() {
 #         Args[] contains the name/value pairs of all the intent variables.
 #  name of function to call on exit
 function simple_main {
-	local topic="$1"
-	local func="$2"
-	local exit_func=${3:-true}
+  local topic="$1"
+  local func="$2"
+  local exit_func=${3:-true}
   trap "cleanup; $exit_func" EXIT
   declare -Ag Args
-	debug "$*"
+  debug "$*"
   watch_mqtt "$topic" | extract_args | event_loop "$func"
-	debug "terminated"
+  debug "terminated"
 }
 
 # Sample main program
@@ -118,15 +118,15 @@ function simple_main {
 #  queue  name of the fifo to use as the queue (default is ${topic}_fifo)
 #  name of function to call on exit
 function queue_main() {
-	local topic="$1"
-	local func="${2:-do_command}"
-	local fifo="${3:-$topic-fifo}"
-	local exit_func=${4:-true}
+  local topic="$1"
+  local func="${2:-do_command}"
+  local fifo="${3:-$topic-fifo}"
+  local exit_func=${4:-true}
 
   trap "cleanup $fifo; $exit_func" EXIT
   rm -f "$fifo";mkfifo "$fifo" # event Q
   (watch_mqtt "$topic" | extract_args > "$fifo") &
   < "$fifo" event_loop "$func"
-	debug "terminated"
+  debug "terminated"
 }
 # end of library

@@ -356,10 +356,10 @@ function clean() {
 }
 
 function main() {
-	debug "Starting timers"
+  debug "Starting timers"
   rm -f pids;mkfifo pids # to pass subshell PID
   get_now
-	queue_main "$MQTT_TOPIC" do_command $FIFO clean
+  queue_main "$MQTT_TOPIC" do_command $FIFO clean
 }
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] || main
 echo "run 'main' to start"

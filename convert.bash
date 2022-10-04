@@ -106,10 +106,10 @@ function do_convert() {
     esac
 }
 function die () {
-	echo "died" > /dev/stderr
+  echo "died" > /dev/stderr
 }
 function main {
-	debug ""
+  debug ""
   simple_main Convert do_convert die
 }
 

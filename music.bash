@@ -78,7 +78,7 @@ function do_command() {
 }
 
 function main {
-	debug "starting mpd controller"
-	simple_main Radio
+  debug "starting mpd controller"
+  simple_main Radio
 }
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] || main
