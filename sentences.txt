@@ -1,8 +1,9 @@
 [Radio]
+  locations=((living room):2 | office:1){location}
   playlists=($playlists){playlist}
-  (play | resume | pause){action} (radio | music)
+  (play | resume | pause){action} (radio | music) [ in <locations> ]
   (next | previous){action} track
-  (increase | decrease | raise | lower){action} [the] volume{detail}
+  (increase | decrease | raise | lower){action} [the] volume [a (lot|little){detail}]
   (select|tune to){action} [playlist] <playlists>
   what (am I listening to | is playing) (:){action:what}
 

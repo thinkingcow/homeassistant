@@ -3,9 +3,9 @@
 # Sentences:
 #  [Radio]
 #    playlists=($playlists){playlist}
-#    (play | resume | pause){action} (radio | music)
+#    (play | resume | pause){action} (radio | music) [in <location>]
 #    (next | previous){action} track
-#    (increase | decrease | raise | lower){action} [the] volume
+#    (increase | decrease | raise | lower){action} [the] volume [a (lot|little){detail}]
 #    (select|tune to){action} [playlist] <playlists>
 #    what (am I listening to | is playing) (:){action:what}
 
@@ -39,9 +39,13 @@ function mpc_cmd() {
 
 function do_command() {
   local command="${Args[action]}"
+  local incr=15
+  [[ ${Args[detail]} == "lot" ]] && incr=35
+  [[ ${Args[detail]} == "little" ]] && incr=5
   case $command in
     play | resume)
       speak "turning on the radio"
+      [[ ${Args[location]} ]] && mpc_cmd enable only "${Args[location]}"
       mpc_cmd play
       ;;
     pause)
@@ -57,11 +61,11 @@ function do_command() {
       speak "now playing. $(mpc_what)"
       ;;
     increase | raise)
-      vol="$(do_vol +10)"
+      vol="$(do_vol +$incr)"
       speak "volume increased to $vol percent"
       ;;
     decrease | lower)
-      vol="$(do_vol -10)"
+      vol="$(do_vol -$incr)"
       speak "volume decreased to $vol percent"
       ;;
     select | "tune to")
