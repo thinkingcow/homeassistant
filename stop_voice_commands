@@ -1,6 +1,6 @@
 #!/bin/bash
 # stop rhasspy and assistants in "screen" sessions
-MODULES="convert music timers"
+MODULES="convert music timers fumehood"
 DIR="${BASH_SOURCE%/*}"
 [[ -d "$DIR" ]] && cd "$DIR"
 

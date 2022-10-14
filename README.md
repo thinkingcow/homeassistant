@@ -61,6 +61,9 @@ Food unit volume to weight conversions.  I like cooking by weight; this provides
 ### music
 mpd music player command/control.
 
+### fumehood
+This turns on/off a tasmota controlled switch.  In my case, it is connected to a remote fume hood fan.
+
 ## Installation
 - [Install Rhasspy](https://rhasspy.readthedocs.io/en/latest/installation/#debian)
 - Install remaining dependencies

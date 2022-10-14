@@ -38,3 +38,6 @@
   what are the timers (:){action:queryall}
   help [with] timers (:){action:help}
 
+[Tasmota]
+  turn (off|on){state} the fume hood
+
