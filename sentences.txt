@@ -41,3 +41,6 @@
 [Tasmota]
   turn (off|on){state} the fume hood
 
+[Weather]
+  when=(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Today|Tonight|Tomorrow){when}
+  What is the weather {when} [tonight]
