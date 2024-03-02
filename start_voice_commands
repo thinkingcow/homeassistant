@@ -1,6 +1,6 @@
 #!/bin/bash
 # Start rhasspy and the required voice command services
-MODULES="convert music timers fumehood"
+MODULES="convert music timers fumehood forecast"
 TAG=assistant
 DIR="${BASH_SOURCE%/*}"
 [[ -d "$DIR" ]] && cd "$DIR"
@@ -19,8 +19,9 @@ function do_screen() {
 }
 
 # start rhasspy and assistants in "screen" sessions
+do_screen /usr/bin/rhasspy -p en
+sleep 30
 for i in $MODULES ; do
   do_screen ./$i.bash
 done
-do_screen /usr/bin/rhasspy -p en
 logger -t $TAG "Starting services: $MODULES"
