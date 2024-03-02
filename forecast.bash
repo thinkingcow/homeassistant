@@ -1,18 +1,12 @@
 #!/bin/bash
-# XXX NOT DONE
-# voice control for weather.gov forecast api
+# Voice control for weather.gov forecast api
 # Sentences:
 # [Weather]
 #    when=(Afternoon|Sunday|Monday|Tuesday|Wednesday|
 #          Thursday|Friday|Saturday|Today|Tonight|Tomorrow){when}
 #    What is the weather [this] <when> [Night]{night} (:){action:when}
 #    weather summary (:){action:summary}
-
-#  [Weather]
-#    when=(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|
-#        Saturday|Today|Tonight|Tomorrow)
-#    What is the weather [this] <when> [Night]
-#    Weather Summary
+#    (sunrise|sunset) [(today|tomorrow)]
 
 LIB_DIR="${BASH_SOURCE%/*}"
 [[ -d "$LIB_DIR" ]] || LIB_DIR="$PWD"
@@ -44,13 +38,7 @@ function parse_text() {
 		to_entries[]|join("=")'
 }
 
-# extract parse_text info into array and return it
-#  name=Today
-#  detail=Rain. Mostly cloudy. High near 59, with ...
-#  summary=Light Rain
-#  ...
-# 
-
+# extract info into array and return it
 function extract() {
 	unset Data
   declare -A Data
@@ -86,8 +74,9 @@ function today() {
 function do_command() {
 	debug "Args: $(declare -p Args)"
 	eval "$(fetch_forecast | parse_text | extract)"
-  for i in "${!Data[@]}"; do echo "Data: ${i}=${Data[$i]:0:20}"; done
-  case "${Args[action]}" in 
+  # for i in "${!Data[@]}"; do echo "Data: ${i}=${Data[$i]:0:20}"; done
+	local action="${Args[action]}"
+  case $action in 
   summary)
 		local text="Weather summary. "
 		for i in 1 2 3 4 5; do
@@ -98,21 +87,35 @@ function do_command() {
 		;;
 	when)
 		local i="${Args[when]}"
-		debug "start=$i"
 		[[ "$(today)" = "$i" ]] && i="Today"
 		[[ "Tomorrow" = "$i" ]] && i="$(tomorrow)"
 		[[ "$i" = "Today" ]] && [[ ! -v Data["${i}_detail"] ]] && i=${Data[1]}
 		[[ ${Args[night]} == "Night" ]] && i+=" Night"
 		[[ "$i" = "This Afternoon Night" ]] && i="Tonight"
-		debug "end=$i"
+		debug "index=${Args[when]} -> $i"
 
 		local t
 		[[ -v Data[${i}_detail] ]] && t=${Data[${i}_detail]} || t="unknown"
 		speak "$i. $t"
 		;;
+	sunrise|sunset)
+		# XXX This doesn't belong here
+		# See https://github.com/risacher/sunwait
+		local times=($(/home/suhler/bin/sunwait list 2 37.4009712N 122.1235118W |
+		  	sed 's/,//g'))
+		debug $(declare -p times)
+		local index=0
+		[[ "$action" = "sunset" ]] && ((index++))
+		[[ ${Args[when]} = "tomorrow" ]] && ((index+=2))
+		speak "$action ${Args[when]:-Today} is $(say_when ${times[$index]})"
+		;;
 	*)
 		speak "invalid weather request"
 	esac
+} 
+
+function say_when() {
+	date -d "$1"  "+%l %M %p" | sed 's/ 0/ owe /'
 }
 
 function main {
