@@ -64,6 +64,9 @@ mpd music player command/control.
 ### fumehood
 This turns on/off a tasmota controlled switch.  In my case, it is connected to a remote fume hood fan.
 
+### forecast
+This reaches out to the weather.gov API for local weather forecasts
+
 ## Installation
 - [Install Rhasspy](https://rhasspy.readthedocs.io/en/latest/installation/#debian)
 - Install remaining dependencies
@@ -86,3 +89,79 @@ if I loose a local copy.  If anyone else finds this to be useful, that
 would be nice.
 - my assistant also knows how to cheat at the NYT puzzles, but I'm trying not to.
 - This repo is still being assembled from scattered parts.
+
+## 2024 Update
+This repo is pretty old at this point, but It still works for me.
+In fact I was adding calendar integration
+(e.g. "when's my next Dr's appointment") when I broke it: an "apt upgrade"
+made an incompatible change to something, and with its many moving parts and
+dependencies, it's going to take a while to figure out how to get it working
+again.  My plan is an upgrade to a Raspberry PI 5 so I can switch to better TTS.
+
+In the meantime, this is the easiest way to get this stuff working from scratch on 
+a Rhaspberry PI 4.  It uses old software which might not have the latest 
+security patches, but it works and it's easy:
+1. Fetch the last Bullseye release for the Rhaspberry PI: [2021-05-07-raspios-buster-arm64-lite.zip](https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2021-05-28/2021-05-07-raspios-buster-arm64.zip),
+copy it to a sd card and use it to boot up the PI. 
+```
+  unzip 2021-05-07-raspios-buster-arm64.zip
+  # insert new sd card via usb adaptor, verify device name, usually X=a
+  sudo cp 2021-05-07-raspios-buster-arm64.img /dev/sdX
+  sync
+  # remove sd card from usb holder and insert into Pi 4
+```
+
+Configure the PI in the usual way (`raspi-config`),
+making sure to enable `WIFI` and `ssh`.  This this release uses a default "pi" 
+account and password, do change the password.
+
+2. Fetch the Rhasspy debian package: 
+[rhasspy_arm64.dev](https://github.com/rhasspy/rhasspy/releases/latest/download/rhasspy_arm64.deb).  If you use a newer version of the OS and try to install this package, you will find yourself in dependency hell.
+
+3. Install Rhasspy
+```
+  sudo apt update
+  sudo apt install ./rhasspy_arm64.deb
+```
+You should be able to run `rhasspy --profile en`, navigate to the Rhasspy
+website and verify that it's working.
+
+4.  Install the dependencies for this repository
+```
+ sudo apt install git jq mosquitto-clients bc screen
+```
+Git is required to fetch the repository, the rest are used by the intent
+scripts
+
+5. Configure Rhasspy.
+Import the `rhasspy-profile.json`, `sentences.txt` and `foods.slot` into Rhasspy
+using the web interface. You will likely be using a USB audio device, so the audio
+device is set to `default:CARD=USB`, but you may need to futz with it
+for your setup.
+
+6. Download this repo:
+``` 
+  mkdir ~/git
+  cd ~/git
+  git clone https://github.com/thinkingcow/homeassistant.git
+```
+7.  Fire it up by running `./start_voice_commands` which starts Rhasspy and this repo's intent services, each in its own screen session.  You can use `screen -ls` to
+see the screen sessions.
+
+8. Set for startup on reboot by installing the systemd service.
+Check (and edit)  `homeassistant.service` to ensure the path to
+this directory is correct. Then run (as root)
+```
+  cp homeassistant.service /etc/systemd/system
+  systemctl daemon-reload
+  systemctl enable homeassistant.service
+```
+Make sure Rhaspberry isn't already running with `./stop_voice_commands` then
+
+```
+  systemctl start homeassistant.service
+```
+
+Raspberry Pi's chew through sd cards when configured as described here. 
+Consequently, about once per year you should swap out the sd card for a new
+one to minimise the chance of disk corruption.  I find [rpi-clone](https://github.com/billw2/rpi-clone) works well for the task.
