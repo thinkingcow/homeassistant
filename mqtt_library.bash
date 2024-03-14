@@ -17,7 +17,7 @@ function watch_mqtt {
 # - add a dummy slot "command=xxx" at the end to trigger the action.
 function extract_args {
   jq --unbuffered -r \
-     '.slots|map({(.slotName):.value.value})|. += [{"command":"timer"}]|add|to_entries[]|join("=")' 
+		'.slots|map({(.slotName):(.value.value|tostring)})|. += [{"command":"timer"}]|add|to_entries[]|join("=")' 
 }
 
 # Play a sound file via MQTT
@@ -34,7 +34,7 @@ function play_wav() {
 function speak {
   local text="${1:-hello}"
   debug "$text"
-  mosquitto_pub -h "$MQTT_HOST" -t hermes/tts/say -m '{"text":"'"$text"'"}'
+  echo '{"text":"'"$text"'"}' | mosquitto_pub -h "$MQTT_HOST" -t hermes/tts/say -s
   return 0
 }
 
