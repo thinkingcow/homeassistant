@@ -14,10 +14,10 @@ function watch_mqtt {
 }
 
 # Extract slots from an mqtt Rasspy message as name=value pairs.
-# - add a dummy slot "command=xxx" at the end to trigger the action.
+# - add a dummy slot "command=done" at the end to trigger the action.
 function extract_args {
   jq --unbuffered -r \
-     '.slots|map({(.slotName):.value.value})|. += [{"command":"timer"}]|add|to_entries[]|join("=")' 
+     '.slots|map({(.slotName):(.value.value|tostring)})|. += [{"command":"done"}]|add|to_entries[]|join("=")' 
 }
 
 # Play a sound file via MQTT
@@ -71,7 +71,7 @@ function event_loop  {
   declare -Ag Args
   while read -r line; do
     case "$line" in
-    command*)
+    command=done)
       debug "$(declare -p Args)"
       $func
       unset Args
