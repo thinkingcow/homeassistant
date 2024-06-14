@@ -24,7 +24,7 @@
 [Timer]
   timer_duration=(1..59){minutes} [and a half{seconds:30}]
   timer_label=($nouns){label}
-  timer_named=(pizza | egg | bread | englishmuffin | crumpet | cookie | yogurt){label}
+  timer_named=(pizza | egg | bread | englishmuffin | crumpet | cookie | popover | yogurt){label}
   timer_delta=(30 seconds | 1 minute | 2..30 minutes){delta}
   timer_ref=(the <timer_label>|the <timer_duration>|that{label})
   
