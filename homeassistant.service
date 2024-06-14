@@ -1,0 +1,24 @@
+[Unit]
+Description=ThinkingCow HomeAssistant
+After=syslog.target network.target multi-user.target
+
+[Service]
+Type=simple
+
+# Start rhasspy and all the intent modules
+ExecStart=/home/pi/git/homeassistant/start_voice_commands
+
+User=suhler
+Group=suhler
+WorkingDirectory=/home/pi/git/homeassistant
+
+RestartSec=5
+Restart=on-failure
+
+StandardOutput=syslog
+StandardError=syslog
+
+SyslogIdentifier=homeassistant
+
+[Install]
+WantedBy=multi-user.target

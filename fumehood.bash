@@ -11,10 +11,15 @@ LIB_DIR="${BASH_SOURCE%/*}"
 # shellcheck source=mqtt_library.bash
 source "$LIB_DIR/mqtt_library.bash"
 
+# TODO: add "what" to speak current fumehood state
 function do_command() {
   local state="${Args[state]}"
   speak "turning the fume hood $state"
-	curl -s -o /dev/null -m 10 "$URL/cm?cmnd=Power%20$state" || speak "Oops, Something went wrong"
+  curl -s -o /dev/null -m 10 "$URL/cm?cmnd=Power%20$state" || speak "Oops, Something went wrong"
+}
+
+function get_state() {
+  curl -s "$URL/cm?cmnd=Power" | jq -r .POWER
 }
 
 function main {

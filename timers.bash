@@ -11,7 +11,7 @@
 #  [Timer]
 #  timer_duration=(1..59){minutes} [and a half{seconds:30}] minute)
 #  timer_label=($nouns){label}
-#  timer_named=(pizza | egg | bread | englishmuffin | crumpet | cookie | yogurt){label}
+#  timer_named=(pizza | egg | bread | englishmuffin | crumpet | cookie | popover | yogurt){label}
 #  timer_delta=(30 seconds | 1 minute | 2..30 minutes){delta}
 #  timer_ref=(the <timer_label>|the <timer_duration>|that)
 #  
@@ -24,6 +24,7 @@
 #  
 #  what are the timers (:){action:queryall}
 #  help [with] timers (:){action:help}
+#  What time is it, what is the time
 # Keywords (name=value)
 #  action=set|add|cancel|cance_all|query_all|help - primary timer action
 #  minutes=1..50   - timer duration in minutes
@@ -68,6 +69,9 @@ declare -A NamedTimers=(
   [yogurt]=14400
   [chocolate-chip-cookie]=660
   [swap-the-cookie-trays]=330
+  [popovers]=1320
+  [popover-oven-to-375]=900
+
 )
 
 # Permits interactice debugging via source $0
@@ -142,6 +146,13 @@ function special_cookie {
   debug "$*"
   enqueue "$FIFO" "action=set" "label=swap-the-cookie-trays"
   enqueue "$FIFO" "action=set" "label=chocolate-chip-cookie"
+}
+
+# Popovers
+function special_popover {
+  debug "$*"
+  enqueue "$FIFO" "action=set" "label=popovers"
+  enqueue "$FIFO" "action=set" "label=popover-oven-to-375"
 }
 
 # Must be a valid running timer
@@ -227,8 +238,8 @@ function do_help() {
   speak "you can say:"
   speak "  set the seventeen minute timer."
   speak "  set the pizza timer."
-  speak "  set a two minute timer named elephant"
-  speak "  add 2 and a half minutes to the pizza timer"
+  speak "  set a two minute timer"
+  speak "  add 2 and a half minutes to that timer"
   speak "  cancel that timer."
   speak "  cancel the seventeen minute timer."
   speak "  what are the timers."

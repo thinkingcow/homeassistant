@@ -34,6 +34,7 @@ function do_playlist() {
 }
 
 function mpc_cmd() {
+  debug "--host $MPC_HOST -q $@"
   mpc --host $MPC_HOST -q "$@"
 }
 

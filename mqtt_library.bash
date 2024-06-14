@@ -34,7 +34,7 @@ function play_wav() {
 function speak {
   local text="${1:-hello}"
   debug "$text"
-  mosquitto_pub -h "$MQTT_HOST" -t hermes/tts/say -m '{"text":"'"$text"'"}'
+  echo '{"text":"'"$text"'"}' | mosquitto_pub -h "$MQTT_HOST" -t hermes/tts/say -s
   return 0
 }
 
