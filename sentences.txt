@@ -39,7 +39,7 @@
   help [with] timers (:){action:help}
 
 [Tasmota]
-  turn (off|on){state} the fume hood
+  turn (off|on){state} the (fume hood|exhaust fan)
 
 [Weather]
   when=(Afternoon|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Today|Tonight|Tomorrow){when}

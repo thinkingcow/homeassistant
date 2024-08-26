@@ -1,6 +1,10 @@
 #!/bin/bash
 # Say the time
-# [Tod]
+
+# Sentences.txt entries
+#   [Tod]
+#   What time is it
+#   What is the time
 
 LIB_DIR="${BASH_SOURCE%/*}"
 [[ -d "$LIB_DIR" ]] || LIB_DIR="$PWD"
@@ -14,7 +18,7 @@ function do_tod() {
 }
 
 function main {
-  debug "starting timeof day  hood controller"
+  debug "starting timeof day service"
   simple_main Tod do_tod
 }
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] || main

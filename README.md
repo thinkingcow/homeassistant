@@ -61,19 +61,22 @@ query "what time is it" by speaking the current time.
 ```bash
   #!/bin/bash
   # Rhasspy module to Say the time of day
+  # sentences.txt entries:
+  #  [TOD]
+  #  what time is it
 
   # boilerplate to import the mqtt library
   LIB_DIR="${BASH_SOURCE%/*}"
   [[ -d "$LIB_DIR" ]] || LIB_DIR="$PWD"
   source "$LIB_DIR/mqtt_library.bash"
   
-  # Called for each command. Args[] contains all name/value arguments
+  # Called for each command. Args[] contains all name/value arguments (not used)
   function do_tod() {
     speak "It is $(date "+%H:%M %P. %A %B %d.")"
   }
 
   function main {
-    debug "starting timeof day controller" # emit debugging
+    debug "starting timeof day server" # emit debugging
     simple_main Tod do_tod
   }
 
