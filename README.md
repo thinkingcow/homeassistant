@@ -206,8 +206,10 @@ Make sure Rhaspberry isn't already running with `./stop_voice_commands` then
 ```
 9. Misc notes:
    - `num2words`, used by `convert.bash` is included in the Rhasspy.deb package
-      but doesn't seem to work.  I copied the binary to /usr/bin, and changed
-      the #! line to point to the Rhasspy installed version of python.
-Raspberry Pi's chew through sd cards when configured as described here. 
-Consequently, about once per year you should swap out the sd card for a new
-one to minimise the chance of disk corruption.  I find [rpi-clone](https://github.com/billw2/rpi-clone) works well for the task.
+      but doesn't work for me.  I copied the binary to /usr/bin, and changed
+      the #! line to point to the Rhasspy installed version of python to fix it.
+   -  Raspberry Pis chew through sd cards when configured as described
+      here.  Consequently, about once per year you should swap out the
+      sd card for a new one to minimise the chance of disk corruption.
+      I find [rpi-clone](https://github.com/billw2/rpi-clone) works well
+      for the task.
