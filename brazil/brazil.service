@@ -1,0 +1,18 @@
+# Brazil web server for simple MQTT interface to grasshopper commands
+
+[Unit]
+Description=Brazil web service
+After=multi-user.target
+StartLimitIntervalSec=0
+
+[Service]
+WorkingDirectory=/home/suhler/brazil
+Type=simple
+Restart=always
+RestartSec=60
+ExecStart=/usr/bin/java \
+   -jar brazil-18-Aug-09.jar -c brazil.config log 2
+
+[Install]
+WantedBy=multi-user.target
+
