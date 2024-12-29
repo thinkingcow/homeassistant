@@ -1,11 +1,13 @@
 <!-- used with "fetch" to issue text commands -->
 <if query.say>
-  <exec prepend=what. command="/home/suhler/bin/speak -h ${mqtt_host} ${query.say}" timelimit=5000>
+  <if query.verbose>
+    <set namespace=local name=v value="-v">
+  </if>
+  <exec prepend=what. command="/home/suhler/bin/speak ${v} -h ${mqtt_host} ${query.say}" timelimit=5000>
   <abort>
 </if>
 
 <head>
-  <addheader Cache-Control=no-store>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <!--

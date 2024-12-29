@@ -14,6 +14,7 @@ import (
 
 func main() {
 	var host = flag.String("h", "grasshopper", "MQTT server hostname")
+	var verify = flag.Bool("v", false, "Speak the command first")
 	flag.Parse()
 	text := strings.ReplaceAll(strings.Join(flag.Args(), " "), "\"", "")
 	if text == "" {
@@ -33,6 +34,13 @@ func main() {
 	})
 	if err != nil {
 		log.Fatalf("Connect() failed: %v", err)
+	}
+	if *verify {
+		json := fmt.Sprintf("{\"text\":\"%s\"}", text)
+		err = c.Publish(client.AtMostOnce, false, "hermes/tts/say", []byte(json))
+		if err != nil {
+			log.Printf("Publish() failed: %v", err)
+		}
 	}
 	json := fmt.Sprintf("{\"input\":\"%s\"}", text)
 	err = c.Publish(client.AtMostOnce, false, "hermes/nlu/query", []byte(json))

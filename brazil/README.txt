@@ -26,6 +26,18 @@ favicon.ico
 grasshopper.svg
 tabbed.bsl
    The web site.  Navigate to http://localhost:8080/tabbed.html
+   This page has several configuration parameters that may be specified as
+   query parameters These are intended for use with "shortcuts" on mobile devices
+   to alter the
+     verbose [false] (speaks the text first: needs "speak" built from source)
+   These are intended for use with "shortcuts" on mobile devices
+   to alter the size and spacing of various UI elements for best "fit"
+     spacing [130]
+     size [130]
+     button [110];
+     radius [20]
+     margin [1]
+     select [160]
 speak
    Staticially linked binary for the Rhaspberry PI
 speak.go
