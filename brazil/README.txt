@@ -25,7 +25,7 @@ brazil.service
 favicon.ico
 grasshopper.svg
 tabbed.bsl
-   The web site.  Navigate to http://localhost:8080/tabbed.html
+   The web site.  Navigate to http://localhost:8080/
    This page has several configuration parameters that may be specified as
    query parameters These are intended for use with "shortcuts" on mobile devices
    to alter the
@@ -41,9 +41,12 @@ tabbed.bsl
 speak
    Staticially linked binary for the Rhaspberry PI
 speak.go
-   Standalone "go" app to send text to the Rhasspy MQTT channel that simulates
-   speech recognition.  I could just call "mosquitto_pub", but this was harder.
-   To build and install (or use the one, above):
+   Standalone "go" app to send text to the Rhasspy MQTT channel that
+   simulates speech recognition.  I could just call "mosquitto_pub",
+   but this was harder.  (Actually, using mosquitto_pub requires the
+   optional json.jar to generate the mqtt messages, and that complicates
+   running the server)
+   To build and install (or use the included one):
      - install GO (v 1.1.18 or higher)
      - mkdir speak; cp speak.go speak; cd speak
      - go mod init speak
