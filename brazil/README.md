@@ -1,7 +1,9 @@
+## Abstract
 Provide a simple mobile friendly web interface to the Grasshopper home
 assistant.  This works by injecting text into the MQTT stream that 
 represents recognized text.  See "Sentences.txt" for valid text strings.
 
+## Summary
 I use an old java based webserver I wrote decades ago called "brazil".
 It's a testament to the backwards compatibility of Java that a system
 that was written for JDK 1.1 still works. As this for my "home" network, 
@@ -15,7 +17,7 @@ The jar file contains all the source code and documentation for Brazil. Run:
   java -jar brazil-18-Aug-09.jar port 8080
 and navigate to "http://localhost:8080" to view the documentation.
 
-* Files:
+## Files:
 brazil-18-Aug-09.jar
    Self contained Java based webserver
 brazil.config
