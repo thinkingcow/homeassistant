@@ -2,8 +2,10 @@
 
 ## Introduction
 Unlike the cloud based assistants that attempt natural language processing
-on free form speech input, Rhasspy accepts a (potentially large) fixed list
-of sentences to regocnize.  This makes the speech recognition task much easier, and the resultant actions more predictable, at the expense of having a pre-determined sst of tasks and ways to invoke them.
+on free form speech input, Rhasspy accepts a (potentially large) fixed
+list of sentences to recognize.  This makes the speech recognition task
+much easier, and the resultant actions more predictable, at the expense
+of having a pre-determined sst of tasks and ways to invoke them.
 
 ## General Issues (in arbitrary order)
 - The wake word is too sensitive.  Lots of false positives; no false
@@ -32,7 +34,7 @@ of sentences to regocnize.  This makes the speech recognition task much easier, 
 - I need to write a suite of integration tests for the timers - it's
   getting too complicated to find bugs by inspection.
 - It would be nice to have an "any" word - e.g. an arbitrary name for a
-  timer.  Don't care ehat it is, as long as I can correlate the same word in
+  timer.  Don't care what it is, as long as I can correlate the same word in
   a future utterance.  I'm currently faking it with a very large word
   list.  I can see how to do this conceptually, but I'm hoping someone
   else will beat me to it.
