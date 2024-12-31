@@ -9,7 +9,7 @@
 # Configuration parameters
 MQTT_HOST=localhost          # host of mqtt server
 MQTT_TOPIC=Sprinkler         # topic to read voice commands from
-PASS=791fa8bd24db5a87dfa7e75a54db454a # opensprinkler password
+PASS=***		     # opensprinkler password
 HOST=sprinkler # host of open sprinkler
 declare -A Args   # Command arguments
 
@@ -35,7 +35,7 @@ function time_to_seconds {
   IFS=: read -r h m s <<< "$1"
   [[ -z "$m" ]] && { echo "$h" ; return; }
   [[ -z "$s" ]] && { s="$m"; m="$h"; h=0; }
-  echo "$(( $h * 3600 + $m * 60 + $s))"
+  echo "$(( h * 3600 + m * 60 + s))"
 }
 
 # Fetch some JSON from opensprinkler
@@ -147,7 +147,7 @@ function do_command() {
     status)
       do_status
       ;;
-    status)
+    cancel)
       do_cancel
       ;;
     pause)

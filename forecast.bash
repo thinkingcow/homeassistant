@@ -16,8 +16,8 @@ source "$LIB_DIR/mqtt_library.bash"
 
 # Convert lat,lon into grid number
 function get_grid() {
-	lat=${1:-37.4009712}
-	lon=${2:--122.1235118}
+	lat=${1:-37.0}
+	lon=${2:--122.0}
 	curl -s -L "https://api.weather.gov/points/${lat},${lon}" |
 	jq -r -c '.properties|{x:.gridX , y:.gridY}|join(",")'
 }
