@@ -110,6 +110,10 @@ sunrise times. (The local park hours are keyed on those times).
 Reads the last recognized utterance.  Used for debugging, and to demonstrate the use
 of a FIFO as an event queue to deal with multiple event streams asyncrhonously.
 
+### sprinklers
+Preliminary interface to "opensprinkler".  Can be used to pause the sprinkler system,
+or ask its status.
+
 ## Installation
 - [Install Rhasspy](https://rhasspy.readthedocs.io/en/latest/installation/#debian)
 - Install remaining dependencies
