@@ -18,15 +18,15 @@ The jar file contains all the source code and documentation for Brazil. Run:
 and navigate to "http://localhost:8080" to view the documentation.
 
 ## Files:
-brazil-18-Aug-09.jar
+brazil-18-Aug-09.jar:
    Self contained Java based webserver
-brazil.config
+brazil.config:
    Brazil server configuration for the webserver
-brazil.service
+brazil.service:
    Systemd service to start web service on startup
-favicon.ico
-grasshopper.svg
-tabbed.bsl
+favicon.ico:
+grasshopper.svg:
+tabbed.bsl:
    The web site.  Navigate to http://localhost:8080/
    This page has several configuration parameters that may be specified as
    query parameters These are intended for use with "shortcuts" on mobile devices
@@ -40,9 +40,9 @@ tabbed.bsl
      radius [20]
      margin [1]
      select [160]
-speak
+speak:
    Staticially linked binary for the Rhaspberry PI
-speak.go
+speak.go:
    Standalone "go" app to send text to the Rhasspy MQTT channel that
    simulates speech recognition.  I could just call "mosquitto_pub",
    but this was harder.  (Actually, using mosquitto_pub requires the
