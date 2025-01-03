@@ -58,14 +58,9 @@
  .hide {
    display: none;
  }
-#range {
+ #range {
   width: 70%;
  }
-
-datalist {
-  width: 200px;
-}
-
 </style>
 
 <div>
@@ -76,7 +71,6 @@ datalist {
   </foreach>
 </div>
 <hr>
-
 <div class="Timers group section">
   <b>Set Timer minutes:</b><br/>
   <div id=t1><input type=range id=range min=1 max=59 oninput="do_change()"><button id=any class=direct name=say>??</button></div>
@@ -88,7 +82,7 @@ datalist {
   </div>
   <br/>
   <div id=t2>
-    <foreach name=i list="1,3,5,10,20,30,45" delim=",">
+    <foreach name=i list="1,3,5,10,15,20,30,45" delim=",">
       <button class=direct value="set the ${i} minute timer"><get name=i></button>
     </foreach>
   </div>
@@ -114,12 +108,9 @@ datalist {
   <button class=direct value="next track">next<br/>track</button>
   <button class=direct value="previous track">previous<br/>track</button>
   <br/>
-  <br/>
-  Playlist:<select id=list>
-  <foreach name=i list="k q e d,w g b h,classical,rock,jazz,clarinet,christmas,saxophone,bach,flute" delim="," sort>
-    <option name="${i}" value="tune to ${i}"><get i></option>
-  </foreach>
-  </select>
+  Playlist:
+  <input id=list type=range>
+  <span id=list_label>0</span><br/>
   <button class=direct type=submit id=playlist value="tune to all">Select</button>
 </div>
 
@@ -132,32 +123,14 @@ datalist {
   <br/>
   <div>
   <b>Units Conversion to grams</b></br>
-  <select name=quant id=quant>
-    <option value="0" selected >0</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-  </select>+
-  <select name=frac id=frac>
-    <option value="0" selected >0</option>
-    <option value="one eighth">1/8</option>
-    <option value="one quarter">1/4</option>
-    <option value="one third">1/3</option>
-    <option value="one half">1/2</option>
-    <option value="two thirds">2/3</option>
-    <option value="three quarters">3/4</option>
-  </select>
-  <select name=units id=units>
-  <foreach name=i list="cups,pints,quarts,sticks,tablespoons,teaspoons", delim=",">
-    <option value="${i}"><get i></option>
-  </foreach>
-  </select>
-  <select name=foods id=food>
-  <foreach name=i list="sugar,pecan pieces,water,olive oil,flour,salt,chocolate chips,white sugar,baking powder,buttermilk,canola oil,table salt,kosher salt,yoghurt,baking soda,brown sugar,butter,peanut butter,raisins,sour cream,milk,honey,rolled oats", delim=",">
-    <option value="${i}"><get i></option>
-  </foreach>
-  </select>
+  <input id=quant type=range>
+  <span id=quant_label>0</span><br/>
+  <input id=frac type=range>
+  <span id=frac_label>0</span><br/>
+  <input id=units type=range>
+  <span id="units_label">0</span><br/>
+  <input id=food type=range>
+  <span id="food_label">0</span>
   </div>
   <button id=convert value=convert>Convert</button>
 </div>
@@ -176,33 +149,60 @@ datalist {
     <button class=direct value="cancel sprinkler pause">unpause</button>
   </p>
 </div>
-
 <p id="cmd" class=big>status</p>
 </body>
+
 <script>
   console.log("reload");
   function id(x) {
     return document.getElementById(x);
   }
+
+  // run function for each element in this class
+  function eachClass(cls, f) {
+    Array.from(document.getElementsByClassName(cls)).forEach(el => f(el));
+  }
+
+  // Turn a select list into a range.
+  function range_connect(name, list) {
+    const v = list;
+    let r = document.getElementById(name);
+    let l = document.getElementById(name + "_label");
+    r.min=0;
+    r.value=0;
+    l.innerHTML = v[0];
+    r.max=v.length-1;
+    r.oninput = function() {
+      l.innerHTML = v[this.value];
+    }
+  }
+
+  // Display status message
   function status(s, err) {
     id("cmd").innerHTML=s;
     let cl=id("cmd").classList;
     err ? cl.add("error") : cl.remove("error");
   }
+
+  // set the timer to a specified minute value
   function do_change() {
     let v = id("range").value;
     id("any").firstChild.data=v;
     id("any").value="set the " + v + " minute timer";
   }
+
+  // Sent the specified text to MQTT
   function do_click(q) {
     fetch("?say=" + encodeURIComponent(q));
     status(q);
   }
 
+  // Send the text query to MQTT and display text (or error)
   function do_fetch(el) {
     console.log(fetch,el);
     do_send(el.target.value);
   }
+
   function do_send(say) {
     let f = new FormData();
     f.append("say", say);
@@ -214,11 +214,11 @@ datalist {
 
   // units conversion selection to text
   function do_convert(e) {
-    let units=id("units").value;
+    let units=id("units_label").innerHTML;
+    let frac=id("frac_label").innerHTML;
+    let quant=id("quant_label").innerHTML;
+    let food=id("food_label").innerHTML;
     let unit = units.slice(0, -1);
-    let frac=id("frac").value;
-    let quant=id("quant").value;
-    let food=id("food").value;
     let say="";
     if (quant == "0" && frac == "0") {
       status("Nothing to convert!", true);
@@ -238,11 +238,7 @@ datalist {
     do_send(say);
   }
 
-  // run function for each element in this class
-  function eachClass(cls, f) {
-    Array.from(document.getElementsByClassName(cls)).forEach(el => f(el));
-  }
-
+  // Select the named tab and its contents
   function do_tab(el) {
       let t=el.value;
       status(t + " tab");
@@ -256,16 +252,20 @@ datalist {
     console.log("init");
     eachClass("direct", el => el.onclick=do_fetch);
     eachClass("tab",el => el.addEventListener('click', function(evt) {
-      console.log("click", evt.target);
       do_tab(evt.target);
     }));
     id("convert").onclick=do_convert;
     id("list").onchange=function() {
-      let v = id("list").value;
+      let v = "tune to " + id("list_label").innerHTML;
       id("playlist").value=v;
-      id("playlist").textContent = v;
+      id("playlist").textContent=v;
     };
     do_tab(id("Timers"));
+    range_connect("units", ["cups","pints","quarts","sticks","tablespoons","teaspoons"]);
+    range_connect("frac", ["0", "one eighth", "one quarter", "one third","one half","two thirds","three quarters"]);
+    range_connect("quant", ["0", "1", "2", "3"]);
+    range_connect("food",["baking powder","baking soda","brown sugar","butter","buttermilk","canola oil","chocolate chips","flour","honey","kosher salt","milk","olive oil","peanut butter","pecan pieces","raisins","rolled oats","salt","sour cream","sugar","table salt","water","white sugar","yoghurt"]);
+    range_connect("list",["k q e d", "w g b h", "bach", "christmas", "clarinet", "classical", "flute", "jazz", "rock", "saxophone"]);
     do_change();
   }
   window.onload=init;
