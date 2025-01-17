@@ -1,0 +1,26 @@
+#!/bin/bash
+# The Rhasspy websocket (WS) interface is buffering events, so the browser client
+# gets a message behind.
+# We'll run this standalone MQTT -> WS -> MQTT converter instead to
+# more easily manage MQTT messages in the browser, using the WS apis.
+#
+# - listen to the mqtt topics that represent voice commands and their responses.
+# - Munge the data a bit, and relay to a websocket.
+#   *  convert timestamps to date/time strings
+#   *  other munging TBD
+# - Read WS messages of the form: {"input": "<command>"} from the WS, and
+#   forward them to MQTT as mock "spoken commands"
+
+MQTT_HOST=localhost
+WS_HOST=${1:-192.168.1.240:8089} # our host's external ip address
+
+# the dist versions are too old or missing, using local ones. see:
+#  https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-arm64
+#  https://github.com/vi/websocat/releases/download/v4.0.0-alpha1/websocat4.arm-unknown-linux-musleabi
+websocat=/home/suhler/bin/websocat4
+jq=/home/suhler/bin/jq
+
+mosquitto_sub  -h $MQTT_HOST -F %J -t "hermes/tts/say" -t "hermes/nlu/query" |
+  $jq --unbuffered -c '.tst|=strflocaltime("%a %T")' | 
+  $websocat -t -s $WS_HOST |
+  mosquitto_pub -l -t hermes/nlu/query
