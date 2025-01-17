@@ -53,3 +53,14 @@ and navigate to "http://localhost:8080" to view the documentation.
      - go build
      - cp speak /usr/local/bin
    make sure the resultant "speak" binary is in your path
+
+## TODO
+  The web framework, Brazil uses server side processing to interact with the MQTT
+  message broker, using the server to run the CLI command (speak) to inject the 
+  command into the MQTT stream.  By switching to an MQTT <--> Mebsocket gateway, 
+  we can eliminate the web framework, use static html pages (with javascript),`
+  improve the user feeback by using websockets instead of fetch(), eliminate the
+  custom GO code (speak), and as a bonus: abuse bash, keeping with the spirit of
+  the rest of this repo.
+
+  mqtt_to_ws is the websocket relay, in advance of rewriting the web pages.
