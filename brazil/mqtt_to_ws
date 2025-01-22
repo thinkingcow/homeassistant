@@ -6,21 +6,62 @@
 #
 # - listen to the mqtt topics that represent voice commands and their responses.
 # - Munge the data a bit, and relay to a websocket.
+#   *  toss invalid json lines
 #   *  convert timestamps to date/time strings
 #   *  other munging TBD
 # - Read WS messages of the form: {"input": "<command>"} from the WS, and
 #   forward them to MQTT as mock "spoken commands"
 
+set -euo pipefail
 MQTT_HOST=localhost
-WS_HOST=${1:-192.168.1.240:8089} # our host's external ip address
+WS_HOST=${1:-192.168.1.240} # our host's external ip address
+WS_PORT=${2:-8089}
 
 # the dist versions are too old or missing, using local ones. see:
 #  https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-arm64
 #  https://github.com/vi/websocat/releases/download/v4.0.0-alpha1/websocat4.arm-unknown-linux-musleabi
-websocat=/home/suhler/bin/websocat4
-jq=/home/suhler/bin/jq
+websocat=/home/suhler/bin/websocat # websocat4 works too
+jq=/home/suhler/bin/jq # needs a version with strflocaltime 1.6?
+DEBUG=${DEBUG:-/dev/null}
+DEBUG=/dev/stderr # temporary
 
-mosquitto_sub  -h $MQTT_HOST -F %J -t "hermes/tts/say" -t "hermes/nlu/query" |
-  $jq --unbuffered -c '.tst|=strflocaltime("%a %T")' | 
-  $websocat -t -s $WS_HOST |
-  mosquitto_pub -l -t hermes/nlu/query
+# Emit the pid listening on a port or empty
+function pid_port() {
+  port=${1:-8080}
+  lsof -t -sTCP:LISTEN -i:"$port"
+}
+
+# Restart jq on error
+#   Sometimes mosquitto_sub emits a single JSON message on multiple lines, so we can't
+#   the "-R fromjson" form of jq.  When we get a bad JSON message (happens occasionally),
+#   jq fails, so we'll restart it.
+function do_jq() {
+  while true; do
+    echo "Starting jq" > "$DEBUG"
+    tee >(cat -vn >$DEBUG) | $jq --unbuffered -c '.tst|=strflocaltime("%a %T")' 2>$DEBUG
+    echo "jq Error! $?" > "$DEBUG"
+ done
+}
+
+# Start the mqtt -> ws -> mqtt pipeline
+function run() {
+  < /dev/null mosquitto_sub  -h "$MQTT_HOST" -F %J \
+      -t "hermes/tts/say" -t "hermes/nlu/query" |
+    do_jq |
+    $websocat -t -s "$WS_HOST:$WS_PORT" |
+    $jq -R -c --unbuffered 'fromjson' |
+    mosquitto_pub -l -t hermes/nlu/query > /dev/null
+}
+
+function main() {
+  pid=$(pid_port "$WS_PORT") && {
+    echo "Server already running on port $WS_PORT (pid $pid)" > /dev/stderr
+    exit 1
+  }
+
+  echo "starting MQTT to WS relay" > /dev/stderr
+  run 
+  echo "MQTT to WS relay exited" > /dev/stderr
+}
+
+main

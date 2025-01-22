@@ -63,4 +63,8 @@ and navigate to "http://localhost:8080" to view the documentation.
   custom GO code (speak), and as a bonus: abuse bash, keeping with the spirit of
   the rest of this repo.
 
-  mqtt_to_ws is the websocket relay, in advance of rewriting the web pages.
+  ###mqtt_to_ws
+  the websocket relay, in advance of rewriting the web pages.
+  ###tabbed2.bsl
+  first pass at a *static* site that uses websockets for server communication.
+    It displays all commands and responses directly from the MQTT strean (via the websocket relay).
