@@ -9,7 +9,7 @@
 # Configuration parameters
 MQTT_HOST=localhost          # host of mqtt server
 MQTT_TOPIC=Sprinkler         # topic to read voice commands from
-PASS=***		     # opensprinkler password
+PASS=791fa8bd24db5a87dfa7e75a54db454a # opensprinkler password
 HOST=sprinkler # host of open sprinkler
 declare -A Args   # Command arguments
 
@@ -107,9 +107,9 @@ function do_pause {
   local t="$(jq -r .settings.pt <<< "$j")"
   if [[ "$t" == 0 ]] ; then
     pause_system 15:00 
-    say "Pausing System for 15 minutes"
+    speak "Pausing System for 15 minutes"
   else
-    say "system already paused with $(say_duration "$t") remaining"
+    speak "system already paused with $(say_duration "$t") remaining"
   fi
 }
 
@@ -118,10 +118,10 @@ function do_cancel {
   local j="$(fetch_sprinkler)"
   local t="$(jq -r .settings.pt <<< "$j")"
   if [[ "$t" == 0 ]] ; then
-    say "no pause to cancel"
+    speak "no pause to cancel"
   else 
      pause_system 0 
-     say "Pause cancelled with $(say_duration "$t") remaining" ;
+     speak "Pause cancelled with $(say_duration "$t") remaining" ;
   fi
 }
 
@@ -129,15 +129,15 @@ function do_status {
   local j="$(fetch_sprinkler)"
   local t="$(get_running_text "$j")"
   if [[ -n "$t" ]] ; then
-    say "$t"
+    speak "$t"
     return
   fi
   local p="$(pause_time "$j")"
   if [[ -n "$p" ]] ; then
-    say "$p"
+    speak "$p"
     return
  fi
- say "The sprinker system is idle"
+ speak "The sprinker system is idle"
 }
 
 # Gets called for each mqtt event
