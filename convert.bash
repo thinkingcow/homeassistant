@@ -27,6 +27,7 @@ declare -A Density=(
   [water]=237
   [white sugar]=198
   [yoghurt]=242
+  [yeast]=150
 )
 
 declare -A Fractions=(
