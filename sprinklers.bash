@@ -4,7 +4,9 @@
 #  [Sprinkler]
 #     sprinkler status (:){action:status}
 #     pause sprinklers (:){action:pause}
-#     cancel sprinkler pause ():{action:cancel}
+#     cancel sprinkler pause (:){action:cancel}
+#     set rain delay (:){action:rain}
+#     clear rain delay (:){action:norain}
 
 # Configuration parameters
 MQTT_HOST=localhost          # host of mqtt server
@@ -58,12 +60,10 @@ function pause_time {
   return "$l"
 }
 
+# delay expiration in seconds
 function rain_delay_time {
-  # delay expiration in seconds
   local l=$(jq <<< "$1" -r '.settings | .rdst - .devt')
-  [[ l -gt 0 ]] && \
-    echo "Rain delay active with $(say_duration "$l") remaining" || \
-    echo ""
+  echo "$l"
   }
 
 # Issue a "pause" to the system
@@ -128,6 +128,22 @@ function do_pause {
   fi
 }
 
+function do_rain {
+  rain_delay_hours
+  speak "setting one day rain delay"
+}
+
+function do_norain {
+  local j="$(fetch_sprinkler)"
+  local d="$(rain_delay_time "$j")"
+  if [[ d -gt 0 ]] ; then
+    speak "cancelling $(say_duration $d) rain delay"
+    rain_delay_hours 0
+  else
+    speak "no rain delay to cancel"
+  fi
+}
+
 # pause cancel command
 function do_cancel {
   local j="$(fetch_sprinkler)"
@@ -148,8 +164,8 @@ function do_status {
     return
   fi
   local d="$(rain_delay_time "$j")"
-  if [[ -n "$d" ]] ; then
-	  speak "$d"
+  if [[ d -gt 0 ]] ; then
+    speak "Rain delay active with $(say_duration "$d")"
     return
   fi
   local p="$(pause_time "$j")"
@@ -164,15 +180,11 @@ function do_status {
 function do_command() {
   local command="${Args[action]}"
   case $command in
-    status)
-      do_status
-      ;;
-    cancel)
-      do_cancel
-      ;;
-    pause)
-      do_pause
-      ;;
+    status) do_status ;;
+    cancel) do_cancel ;;
+    pause) do_pause ;;
+    rain) do_rain ;;
+    norain) do_norain ;;
     *)
       speak "sprinkler $command, is not implemented"
       ;;

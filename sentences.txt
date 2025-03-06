@@ -45,3 +45,13 @@
   when=(Afternoon|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Today|Tonight|Tomorrow){when}
   What is the weather [this] <when> [Night]{night} (:){action:when}
   weather summary (:){action:summary}
+
+[Sprinkler]
+  sprinkler status (:){action:status}
+  what is sprinkling (:){action:status}
+  pause sprinklers (:){action:pause}
+  stop sprinkling (:){action:pause}
+  cancel sprinkler pause (:){action:cancel}
+  resume sprinkling (:){action:cancel}
+  set rain delay (:){action:rain}
+  cancel rain delay (:){action:norain}

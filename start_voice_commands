@@ -1,6 +1,6 @@
 #!/bin/bash
 # Start rhasspy and the required voice command services
-MODULES="${MODULES:=convert music timers fumehood forecast tod}"
+MODULES="${MODULES:=convert music timers fumehood forecast tod sprinklers}"
 TAG=assistant
 DIR="${BASH_SOURCE%/*}"
 [[ -d "$DIR" ]] && cd "$DIR"
