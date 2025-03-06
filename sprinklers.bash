@@ -9,7 +9,8 @@
 # Configuration parameters
 MQTT_HOST=localhost          # host of mqtt server
 MQTT_TOPIC=Sprinkler         # topic to read voice commands from
-PASS=791fa8bd24db5a87dfa7e75a54db454a # opensprinkler password
+PASS_FILE=./opensprinkler.pswd
+PASS=$(cat $PASS_FILE)
 HOST=sprinkler # host of open sprinkler
 declare -A Args   # Command arguments
 
@@ -54,8 +55,16 @@ function pause_time {
   (( l )) && \
     echo "system paused with $(say_duration "$l") remaining" || \
     echo ""
-  return $l
+  return "$l"
 }
+
+function rain_delay_time {
+  # delay expiration in seconds
+  local l=$(jq <<< "$1" -r '.settings | .rdst - .devt')
+  [[ l -gt 0 ]] && \
+    echo "Rain delay active with $(say_duration "$l") remaining" || \
+    echo ""
+  }
 
 # Issue a "pause" to the system
 # $1: seconds to pause (default to 10 minutes, 0 to disable existing pause)
@@ -71,8 +80,14 @@ function run_station {
   local station="${1}"
   local time=$(time_to_seconds "${2:-15}")
   local enable=1
-  (( $time == 0 )) && enable=0
+  (( time == 0 )) && enable=0
   curl -s "http://${HOST}:8080/cm?pw=${PASS}&sid=$station&en=$enable&t=$time"
+}
+
+# set rain delay in hours (0 to reset)
+function rain_delay_hours {
+  local hours=${1:-24}
+  curl -s "http://${HOST}:8080/cv?pw=${PASS}&rd=$hours"
 }
 
 # Fetch all the station names into the Names array
@@ -132,12 +147,17 @@ function do_status {
     speak "$t"
     return
   fi
+  local d="$(rain_delay_time "$j")"
+  if [[ -n "$d" ]] ; then
+	  speak "$d"
+    return
+  fi
   local p="$(pause_time "$j")"
   if [[ -n "$p" ]] ; then
     speak "$p"
     return
- fi
- speak "The sprinker system is idle"
+  fi
+  speak "The sprinker system is idle"
 }
 
 # Gets called for each mqtt event
