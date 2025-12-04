@@ -55,3 +55,6 @@
   resume sprinkling (:){action:cancel}
   set rain delay (:){action:rain}
   cancel rain delay (:){action:norain}
+  set (water|watering) [level] to (50..150){pct} percent (:){action:level}
+  reset (water|watering) level (:){Action:level} (:){pct:100}
+

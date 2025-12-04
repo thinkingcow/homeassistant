@@ -155,6 +155,12 @@ function do_norain {
   fi
 }
 
+function do_level {
+  local pct=${1:-100}
+  set_water_pct "$pct"
+  speak "Setting water level to $pct percent"
+}
+
 # pause cancel command
 function do_cancel {
   local j="$(fetch_sprinkler)"
@@ -200,6 +206,7 @@ function do_command() {
     pause) do_pause ;;
     rain) do_rain ;;
     norain) do_norain ;;
+    level) do_level "${Args[pct]:-100}" ;;
     *)
       speak "sprinkler $command, is not implemented"
       ;;
