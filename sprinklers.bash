@@ -90,6 +90,12 @@ function rain_delay_hours {
   curl -s "http://${HOST}:8080/cv?pw=${PASS}&rd=$hours"
 }
 
+# wl=[0-250]
+function set_water_pct {
+  local pct=${1:-100}
+  curl -s "http://${HOST}:8080/co?pw=${PASS}&wl=$pct"
+}
+
 # Fetch all the station names into the Names array
 # $1: Output from fetch_sprinkler
 declare -ag Names
@@ -99,6 +105,11 @@ function get_station_names {
   while read -r line ; do
     Names+=("$line")
   done <<< "$l"
+}
+
+function get_option {
+  local option=${2:=wl}
+  jq -r ".options.$option"  <<< "$1"
 }
 
 # get text describing the running staion, if any, or "" of none running
@@ -158,6 +169,10 @@ function do_cancel {
 
 function do_status {
   local j="$(fetch_sprinkler)"
+
+  local pct="$(get_option "$j" wl)"
+  [[ "$pct" -ne "100" ]] && speak "Watering duration is $pct percent"
+
   local t="$(get_running_text "$j")"
   if [[ -n "$t" ]] ; then
     speak "$t"
