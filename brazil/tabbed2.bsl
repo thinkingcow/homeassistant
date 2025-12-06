@@ -143,6 +143,12 @@
     <button class=direct value="sprinkler status">summary</button>
     <button class=direct value="pause sprinklers">pause</button>
     <button class=direct value="cancel sprinkler pause">unpause</button>
+    <button class=direct value="set rain delay">rain</button>
+    <button class=direct value="cancel rain delay">un-rain</button>
+    <br/>watering level:
+    <button class=direct value="set water level to 50 percent">50%</button>
+    <button class=direct value="set water level to 75 percent">75%</button>
+    <button class=direct value="set water level to 100 percent">100%</button>
   </p>
 </div>
 <div id="log"></div>
@@ -300,7 +306,7 @@
     range_connect("units", ["teaspoons","tablespoons","sticks","cups","pints","quarts"]);
     range_connect("frac", ["0", "one eighth", "one quarter", "one third","one half","two thirds","three quarters"]);
     range_connect("quant", ["0", "1", "2", "3"]);
-    range_connect("food",["baking powder","baking soda","brown sugar","butter","buttermilk","canola oil","chocolate chips","flour","honey","kosher salt","milk","olive oil","peanut butter","pecan pieces","raisins","rolled oats","salt","sour cream","sugar","table salt","water","white sugar","yoghurt"]);
+    range_connect("food",["baking powder","baking soda","brown sugar","butter","buttermilk","canola oil","chocolate chips","flour","honey","kosher salt","milk","olive oil","peanut butter","pecan pieces","raisins","rolled oats","salt","sour cream","sugar","table salt","water","white sugar","yoghurt", "yeast"]);
     range_connect("list",["k q e d", "w g b h", "bach", "christmas", "clarinet", "classical", "flute", "jazz", "rock", "saxophone"]);
     do_change();
     setup_ws();
