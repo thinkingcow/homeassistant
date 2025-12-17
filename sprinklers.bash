@@ -66,6 +66,12 @@ function rain_delay_time {
   echo "$l"
   }
 
+# enable/disable system. 1=enable 0=disable (default is to enable)
+function system_enable {
+  local en=${1:-1}
+  curl -s "http://${HOST}:8080/cv?pw=${PASS}&en=$en"
+}
+
 # Issue a "pause" to the system
 # $1: seconds to pause (default to 10 minutes, 0 to disable existing pause)
 function pause_system {
@@ -107,9 +113,14 @@ function get_station_names {
   done <<< "$l"
 }
 
-function get_option {
-  local option=${2:=wl}
-  jq -r ".options.$option"  <<< "$1"
+# Extract a value from the json status
+# $1: json status output
+# $2: options or settings
+# $3: name of option or setting
+function get_value {
+  local category=${2:-options}
+  local option=${3:=wl}
+  jq -r ".$category.$option"  <<< "$1"
 }
 
 # get text describing the running staion, if any, or "" of none running
@@ -176,7 +187,10 @@ function do_cancel {
 function do_status {
   local j="$(fetch_sprinkler)"
 
-  local pct="$(get_option "$j" wl)"
+  local enabled="$(get_value "$j" settings en)"
+  [[ "$enabled" -eq "0" ]] && { speak "Springler system is disabled" ; return ; }
+
+  local pct="$(get_value "$j" options wl)"
   [[ "$pct" -ne "100" ]] && speak "Watering duration is $pct percent"
 
   local t="$(get_running_text "$j")"
