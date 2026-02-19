@@ -3,7 +3,7 @@ Description=ThinkingCow HomeAssistant
 After=syslog.target network.target multi-user.target
 
 [Service]
-Type=simple
+Type=forking
 
 # Start rhasspy and all the intent modules
 ExecStart=/home/pi/git/homeassistant/start_voice_commands

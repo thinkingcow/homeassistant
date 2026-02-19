@@ -22,9 +22,16 @@ function do_screen() {
 
 # start rhasspy and assistants in "screen" sessions
 logger -t $TAG "waiting for rhasspy to start up..."
-do_screen /usr/bin/rhasspy -p en && sleep 30
+do_screen /usr/bin/rhasspy -p en  
+
+# wait for mqtt service to start
+while ! ss -tlnn | grep -q ":1883"; do
+  logger -t $TAG "waiting for Rhasspy to start"
+  sleep 1
+done
+logger -t $TAG "Starting services: $MODULES"
 for i in $MODULES ; do
   do_screen ./$i.bash
 done
-logger -t $TAG "Starting services: $MODULES"
+
 exit 0
