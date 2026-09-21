@@ -190,6 +190,7 @@ function say_duration() {
 
 function say_running() {
   local timer="${1}"
+  Last="$timer" # optional
   speak "the $(say_timer "$timer") timer is already running with $(say_time_left "$timer") left."
 }
 
